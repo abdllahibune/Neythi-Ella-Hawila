@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "Service": {
+      "title": "Salon Service",
+      "description": "A beauty or henna service offered by the salon.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "discountPrice": { "type": "number" },
+        "category": { "type": "string", "enum": ["henna", "beauty", "hair_removal"] },
+        "imageUrl": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["name", "price", "category"]
+    },
+    "Product": {
+      "title": "Beauty Product",
+      "description": "Products used or sold by the salon.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["name", "imageUrl"]
+    },
+    "GalleryImage": {
+      "title": "Gallery Image",
+      "description": "An image for the portfolio gallery.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "category": { "type": "string", "enum": ["bridal", "traditional", "modern"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["imageUrl"]
+    }
+  },
+  "firestore": {
+    "services": {
+      "schema": "Service",
+      "description": "Collection of services offered by the salon."
+    },
+    "products": {
+      "schema": "Product",
+      "description": "Collection of products used/displayed."
+    },
+    "gallery": {
+      "schema": "GalleryImage",
+      "description": "Portfolio images."
+    }
+  }
+}

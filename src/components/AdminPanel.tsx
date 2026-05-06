@@ -137,22 +137,39 @@ function ServiceManager({ services }: { services: Service[] }) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState<Category>(Category.HENNA);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const add = async () => {
+  const addOrUpdate = async () => {
     if (!name || !price) return;
     try {
-      await addDoc(collection(db, 'services'), {
-        name,
-        price: Number(price),
-        category,
-        order: services.length,
-        createdAt: new Date().toISOString()
-      });
+      if (editingId) {
+        await updateDoc(doc(db, 'services', editingId), {
+          name,
+          price: Number(price),
+          category
+        });
+        setEditingId(null);
+      } else {
+        await addDoc(collection(db, 'services'), {
+          name,
+          price: Number(price),
+          category,
+          order: services.length,
+          createdAt: new Date().toISOString()
+        });
+      }
       setName('');
       setPrice('');
     } catch (err) {
       handleFirestoreError(err, OperationType.WRITE, 'services');
     }
+  };
+
+  const startEdit = (s: Service) => {
+    setEditingId(s.id);
+    setName(s.name);
+    setPrice(s.price.toString());
+    setCategory(s.category);
   };
 
   const remove = async (id: string) => {
@@ -188,13 +205,23 @@ function ServiceManager({ services }: { services: Service[] }) {
           <option value={Category.BEAUTY}>تجميل</option>
           <option value={Category.HAIR_REMOVAL}>إزالة شعر</option>
         </select>
-        <button 
-          onClick={add}
-          className="bg-gold text-white rounded-xl flex items-center justify-center gap-2 hover:bg-gold-light"
-        >
-          <Plus />
-          إضافة
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={addOrUpdate}
+            className="flex-1 bg-gold text-white rounded-xl flex items-center justify-center gap-2 hover:bg-gold-light"
+          >
+            <Plus />
+            {editingId ? 'تحديث' : 'إضافة'}
+          </button>
+          {editingId && (
+            <button 
+              onClick={() => { setEditingId(null); setName(''); setPrice(''); }}
+              className="bg-gray-200 text-gray-600 px-4 rounded-xl"
+            >
+              إلغاء
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-4">
@@ -204,7 +231,10 @@ function ServiceManager({ services }: { services: Service[] }) {
               <p className="font-bold text-gray-800">{s.name}</p>
               <p className="text-sm text-gold">{s.price} MRU</p>
             </div>
-            <button onClick={() => remove(s.id)} className="text-red-400 hover:text-red-600"><Trash2 /></button>
+            <div className="flex gap-4">
+               <button onClick={() => startEdit(s)} className="text-blue-400 hover:text-blue-600">تعديل</button>
+               <button onClick={() => remove(s.id)} className="text-red-400 hover:text-red-600"><Trash2 /></button>
+            </div>
           </div>
         ))}
       </div>
@@ -215,16 +245,28 @@ function ServiceManager({ services }: { services: Service[] }) {
 function ProductManager({ products }: { products: Product[] }) {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const add = async () => {
+  const addOrUpdate = async () => {
     if (!name || !url) return;
     try {
-      await addDoc(collection(db, 'products'), { name, imageUrl: url });
+      if (editingId) {
+        await updateDoc(doc(db, 'products', editingId), { name, imageUrl: url });
+        setEditingId(null);
+      } else {
+        await addDoc(collection(db, 'products'), { name, imageUrl: url });
+      }
       setName('');
       setUrl('');
     } catch (err) {
       handleFirestoreError(err, OperationType.WRITE, 'products');
     }
+  };
+
+  const startEdit = (p: Product) => {
+    setEditingId(p.id);
+    setName(p.name);
+    setUrl(p.imageUrl);
   };
 
   const remove = async (id: string) => {
@@ -250,19 +292,35 @@ function ProductManager({ products }: { products: Product[] }) {
           onChange={e => setUrl(e.target.value)}
           className="bg-white p-3 rounded-xl border border-gold/20 outline-none"
         />
-        <button 
-          onClick={add}
-          className="bg-gold text-white rounded-xl flex items-center justify-center gap-2 hover:bg-gold-light"
-        >
-          <Plus />
-          إضافة
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={addOrUpdate}
+            className="flex-1 bg-gold text-white rounded-xl flex items-center justify-center gap-2 hover:bg-gold-light"
+          >
+            <Plus />
+            {editingId ? 'تحديث' : 'إضافة'}
+          </button>
+          {editingId && (
+            <button 
+              onClick={() => { setEditingId(null); setName(''); setUrl(''); }}
+              className="bg-gray-200 text-gray-600 px-4 rounded-xl"
+            >
+              إلغاء
+            </button>
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {products.map(p => (
           <div key={p.id} className="relative group rounded-2xl overflow-hidden shadow-sm">
             <img src={p.imageUrl} alt={p.name} className="aspect-square object-cover" />
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                onClick={() => startEdit(p)}
+                className="bg-white text-gold px-4 py-2 rounded-full text-sm font-bold"
+              >
+                تعديل
+              </button>
               <button onClick={() => remove(p.id)} className="bg-red-500 text-white p-2 rounded-full"><Trash2 /></button>
             </div>
           </div>

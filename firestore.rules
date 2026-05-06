@@ -36,6 +36,24 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Promotions
+    match /promotions/{promoId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Settings
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Stats
+    match /stats/{statId} {
+      allow read: if true;
+      allow write: if true; // Allowed for incrementing visits
+    }
     
     // Admins collection (if manually added)
     match /admins/{adminId} {

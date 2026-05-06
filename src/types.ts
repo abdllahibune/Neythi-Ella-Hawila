@@ -34,6 +34,18 @@ export interface GalleryImage {
   createdAt: string;
 }
 
+export interface Promotion {
+  id: string;
+  title: string;
+  description: string;
+  discount: string;
+  expiryDate: string;
+}
+
+export interface AppSettings {
+  heroImageUrl: string;
+}
+
 export enum OperationType {
   CREATE = 'create',
   UPDATE = 'update',

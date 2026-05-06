@@ -3,26 +3,32 @@ import { Phone, MessageCircle } from 'lucide-react';
 
 const PHONE_NUMBER = '22247070086';
 
-export default function Hero() {
+interface HeroProps {
+  imageUrl?: string;
+}
+
+export default function Hero({ imageUrl }: HeroProps) {
   const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent('مرحباً نيثي الا حويلة، أريد حجز موعد...')}`;
+  const defaultImage = "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=1920";
 
   return (
     <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://images.unsplash.com/photo-1590439471364-192aa70cf0b4?auto=format&fit=crop&q=80&w=1920" 
-          alt="Henna Art"
-          className="w-full h-full object-cover opacity-60"
+          src={imageUrl || defaultImage} 
+          alt="Salon Background"
+          className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-nude/30 to-nude"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-nude via-transparent to-black/20"></div>
       </div>
 
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="serif text-5xl md:text-7xl lg:text-8xl text-gold mb-6 tracking-tight"
+          className="serif text-5xl md:text-7xl lg:text-8xl text-white mb-6 tracking-tight drop-shadow-2xl"
         >
           نيثي الا حويلة
         </motion.h1>
@@ -30,7 +36,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto font-light leading-relaxed"
+          className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-lg"
         >
           نقدم لك أجمل تصاميم الحناء وفنون التجميل بأيدي خبيرة، لتتألقي في كل مناسباتك.
         </motion.p>

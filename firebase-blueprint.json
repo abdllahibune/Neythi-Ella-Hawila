@@ -38,6 +38,35 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["imageUrl"]
+    },
+    "Promotion": {
+      "title": "Salon Promotion",
+      "description": "Special offers and discounts.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "discount": { "type": "string" },
+        "expiryDate": { "type": "string", "format": "date" }
+      },
+      "required": ["title", "discount"]
+    },
+    "AppSettings": {
+      "title": "Application Settings",
+      "description": "General application configuration.",
+      "type": "object",
+      "properties": {
+        "heroImageUrl": { "type": "string" }
+      }
+    },
+    "Stats": {
+      "title": "Analytics Stats",
+      "description": "Site statistics.",
+      "type": "object",
+      "properties": {
+        "count": { "type": "number" }
+      }
     }
   },
   "firestore": {
@@ -52,6 +81,18 @@
     "gallery": {
       "schema": "GalleryImage",
       "description": "Portfolio images."
+    },
+    "promotions": {
+      "schema": "Promotion",
+      "description": "Active offers."
+    },
+    "settings": {
+      "schema": "AppSettings",
+      "description": "Global application configuration."
+    },
+    "stats": {
+      "schema": "Stats",
+      "description": "General statistics."
     }
   }
 }

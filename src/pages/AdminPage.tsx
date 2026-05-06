@@ -8,7 +8,7 @@ import { signInAnonymously } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
 export default function AdminPage() {
-  const { services, products, gallery, loading } = useSalonData();
+  const { services, products, gallery, promotions, settings, stats, loading } = useSalonData();
   const [password, setPassword] = useState('');
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -98,7 +98,14 @@ export default function AdminPage() {
             <span>العودة للموقع الرئيسي</span>
           </button>
       </div>
-      <AdminPanel services={services} products={products} gallery={gallery} />
+      <AdminPanel 
+        services={services} 
+        products={products} 
+        gallery={gallery} 
+        promotions={promotions}
+        settings={settings}
+        stats={stats}
+      />
     </div>
   );
 }

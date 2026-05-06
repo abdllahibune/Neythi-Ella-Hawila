@@ -31,14 +31,29 @@ interface AdminPanelProps {
   stats?: { visits: number };
 }
 
-// Helper to handle image upload to Base64
-const convertToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
+// Cloudinary Config
+const CLOUDINARY_CLOUD_NAME = 'dy5qfryut';
+const CLOUDINARY_UPLOAD_PRESET = 'neythi_uploads';
+
+const uploadToCloudinary = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    {
+      method: 'POST',
+      body: formData,
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('فشل رفع الصورة إلى السحابة');
+  }
+
+  const data = await response.json();
+  return data.secure_url;
 };
 
 export default function AdminPanel({ services, products, gallery, promotions = [], settings, stats }: AdminPanelProps) {
@@ -140,10 +155,11 @@ function ImageUploadField({ onUpload, currentImageUrl }: { onUpload: (url: strin
     if (file) {
       setLoading(true);
       try {
-        const base64 = await convertToBase64(file);
-        onUpload(base64);
+        const url = await uploadToCloudinary(file);
+        onUpload(url);
       } catch (err) {
         console.error(err);
+        alert('حدث خطأ أثناء رفع الصورة');
       } finally {
         setLoading(false);
       }

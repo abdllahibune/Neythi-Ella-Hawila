@@ -4,18 +4,31 @@ import { useSalonData } from '../hooks/useSalonData';
 import { Lock, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { signInAnonymously } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+
 export default function AdminPage() {
   const { services, products, gallery, loading } = useSalonData();
   const [password, setPassword] = useState('');
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password === 'admin123') {
-      setIsAuthorized(true);
-      setError('');
+      setIsLoggingIn(true);
+      try {
+        await signInAnonymously(auth);
+        setIsAuthorized(true);
+        setError('');
+      } catch (err) {
+        console.error(err);
+        setError('خطأ في الاتصال بقاعدة البيانات');
+      } finally {
+        setIsLoggingIn(false);
+      }
     } else {
       setError('كلمة المرور غير صحيحة');
     }
@@ -63,9 +76,10 @@ export default function AdminPage() {
             </div>
             <button 
               type="submit"
-              className="w-full bg-gold text-white p-4 rounded-2xl font-bold text-lg hover:bg-gold-light transition-all shadow-md active:scale-95"
+              disabled={isLoggingIn}
+              className="w-full bg-gold text-white p-4 rounded-2xl font-bold text-lg hover:bg-gold-light transition-all shadow-md active:scale-95 disabled:opacity-50"
             >
-              دخول
+              {isLoggingIn ? 'جاري التحقق...' : 'دخول'}
             </button>
           </form>
         </div>

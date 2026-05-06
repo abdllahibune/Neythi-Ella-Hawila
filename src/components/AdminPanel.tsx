@@ -6,12 +6,9 @@ import {
   doc, 
   updateDoc 
 } from 'firebase/firestore';
-import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
-import { db, auth, handleFirestoreError } from '../lib/firebase';
+import { db, handleFirestoreError } from '../lib/firebase';
 import { Service, Product, GalleryImage, Category, GalleryCategory, OperationType } from '../types';
-import { Plus, Trash2, LogOut, LayoutGrid, Tag, Image as ImageIcon, Settings } from 'lucide-react';
-
-const ADMIN_EMAIL = 'abdllahibune@gmail.com';
+import { Plus, Trash2, LayoutGrid, Tag, Image as ImageIcon, Settings } from 'lucide-react';
 
 interface AdminPanelProps {
   services: Service[];
@@ -20,43 +17,7 @@ interface AdminPanelProps {
 }
 
 export default function AdminPanel({ services, products, gallery }: AdminPanelProps) {
-  const [user, setUser] = useState(auth.currentUser);
   const [activeTab, setActiveTab] = useState<'services' | 'products' | 'gallery'>('services');
-
-  // Auth logic
-  const login = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      if (result.user.email !== ADMIN_EMAIL) {
-        await signOut(auth);
-        alert('غير مسموح لك بالدخول');
-      } else {
-        setUser(result.user);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const logout = async () => {
-    await signOut(auth);
-    setUser(null);
-  };
-
-  if (!user) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-4">
-        <h2 className="serif text-3xl text-gold mb-8">لوحة التحكم</h2>
-        <button 
-          onClick={login}
-          className="bg-gold text-white px-8 py-3 rounded-full flex items-center gap-2 hover:bg-gold-light"
-        >
-          تسجيل الدخول (Google)
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white min-h-screen p-4 md:p-8 rounded-t-[3rem] shadow-2xl mt-10">
@@ -68,13 +29,6 @@ export default function AdminPanel({ services, products, gallery }: AdminPanelPr
             </div>
             <h1 className="serif text-4xl text-gray-800">إدارة المحتوى</h1>
           </div>
-          <button 
-            onClick={logout}
-            className="flex items-center gap-2 text-red-500 hover:text-red-700 transition-colors"
-          >
-            <LogOut className="w-5 h-5" />
-            <span>خروج</span>
-          </button>
         </div>
 
         {/* Tabs */}
